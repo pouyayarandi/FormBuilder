@@ -9,28 +9,35 @@ import SwiftUI
 import Combine
 
 class TitleRow: FormItem, ObservableObject {
+    
     var id: UUID = UUID()
+    var key: String
     
     @Published var title: String
     @Published var hasDivider: Bool = false
     
-    init(title: String) {
+    init(key: String, title: String) {
+        self.key = key
         self.title = title
     }
 }
 
 class SubtitleRow: FormItem, ObservableObject {
+    
     var id: UUID = UUID()
+    var key: String
     
     @Published var text: String
     @Published var hasDivider: Bool = false
     
-    init(text: String) {
+    init(key: String, text: String) {
+        self.key = key
         self.text = text
     }
 }
 
 class TextFieldRow: FormInputItem, ObservableObject {
+    
     var id: UUID = UUID()
     var key: String
     var rules: [Rule] = []
@@ -55,6 +62,7 @@ class TextFieldRow: FormInputItem, ObservableObject {
 }
 
 class SwitchRow: FormInputItem, ObservableObject {
+    
     var id: UUID = .init()
     var key: String
     var rules: [Rule] = []
@@ -164,21 +172,27 @@ struct StickyWidgetView: View {
     }
 }
 
-class ContentViewModel: ObservableObject {
+class ContentViewModel: ObservableObject, Dependable {
+    var dependency: Dependency?
+    
+    init(dependency: Dependency? = nil) {
+        self.dependency = dependency
+    }
+    
     @Published var list: [FormItem] = [
-        TitleRow(title: "Name"),
-        SubtitleRow(text: "Enter your name here as first step"),
+        TitleRow(key: "title_1", title: "Name"),
+        SubtitleRow(key: "subtitle_1", text: "Enter your name here as first step"),
         TextFieldRow(key: "firstname", rules: [MinLengthRule(minLength: 3)]),
         SwitchRow(key: "switch", text: "Toggle it", value: false),
-        SubtitleRow(text: "Some other text goes here"),
+        SubtitleRow(key: "subtitle_2", text: "Some other text goes here"),
         TextFieldRow(key: "lastname"),
-        SubtitleRow(text: "")
+        SubtitleRow(key: "subtitle_3", text: "")
     ]
     
     var data: [String: Any] {
-        Dictionary(uniqueKeysWithValues: list.compactMap({ $0 as? FormInputItem }).map({ ($0.key, $0.anyValue) }))
+        Dictionary(uniqueKeysWithValues: list.compactMap({ $0 as? (any FormInputItem) }).map({ ($0.key, $0.anyValue) }))
     }
-
+    
     func buttonTapped() {
         let json = String(data: try! JSONSerialization.data(withJSONObject: data, options: .fragmentsAllowed), encoding: .utf8) ?? ""
         (list[list.count - 1] as! SubtitleRow).text = json
@@ -196,10 +210,12 @@ struct ContentView: View {
     }
 }
 
+
+
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            ContentView(viewModel: .init())
+            ContentView(viewModel: .init(dependency: testDependency))
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationTitle("Example")
         }
