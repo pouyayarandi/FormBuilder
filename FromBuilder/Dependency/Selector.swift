@@ -27,7 +27,7 @@ struct Selector {
         case index(Int)
         case key(String)
     }
-    
+
     var mode: Mode
     var value: SelectorValue
     
@@ -53,5 +53,11 @@ struct Selector {
             guard let newValue = newValue else { return }
             value = .key(newValue)
         }
+    }
+
+    func select(_ list: [any FormItem]) -> FormItem? {
+        guard var index = index ?? list.firstIndex(where: { $0.key == name }) else { return nil }
+        index = mode.modify(index: index)
+        return list[index]
     }
 }

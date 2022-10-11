@@ -30,12 +30,12 @@ extension FormInputRowItem {
         objectWillChange.send()
     }
 
-    var anyFormInputValue: FormAnyInputValue {
+    var anyFormInputValue: any FormAnyInputValue {
         self.value
     }
 }
 
-protocol FormAnyInputValue: Codable {}
+protocol FormAnyInputValue: Codable, Comparable {}
 
 extension FormAnyInputValue {
 
@@ -45,4 +45,8 @@ extension FormAnyInputValue {
 }
 
 extension String: FormAnyInputValue {}
-extension Bool: FormAnyInputValue {}
+extension Bool: FormAnyInputValue {
+    public static func < (lhs: Bool, rhs: Bool) -> Bool {
+        return false
+    }
+}
