@@ -15,9 +15,9 @@ protocol DependencyPayload {
 class Dependency {
     let predicate: any Predicatable
     let actions: [any DependencyAction]
-    @Published var list: [FormItem]
+    @Published var list: [any FormItem]
     
-    init(predicate: any Predicatable, actions: [any DependencyAction], list: [FormItem]) {
+    init(predicate: any Predicatable, actions: [any DependencyAction], list: [any FormItem]) {
         self.predicate = predicate
         self.actions = actions
         self.list = list

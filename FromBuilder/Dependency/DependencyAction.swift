@@ -20,19 +20,20 @@ enum DependencyActionType {
 }
 
 protocol DependencyAction {
+
     associatedtype Payload: DependencyPayload
     
     init(payload: Payload)
     
     var payload: Payload { get set }
     
-    func execute(list: inout [FormItem])
+    func execute(list: inout [any FormItem])
 }
 
 struct InsertDependencyAction: DependencyAction {
     var payload: InsertPayload
     
-    func execute(list: inout [FormItem]) {
+    func execute(list: inout [any FormItem]) {
         list.insert(payload: payload)
     }
 }
@@ -40,7 +41,7 @@ struct InsertDependencyAction: DependencyAction {
 struct RemoveDependencyAction: DependencyAction {
     var payload: RemovePayload
     
-    func execute(list: inout [FormItem]) {
+    func execute(list: inout [any FormItem]) {
         list.remove(using: payload)
     }
 }
@@ -48,12 +49,13 @@ struct RemoveDependencyAction: DependencyAction {
 struct ReplaceDependencyAction: DependencyAction {
     var payload: ReplacePayload
     
-    func execute(list: inout [FormItem]) {
+    func execute(list: inout [any FormItem]) {
         list.replace(using: payload)
     }
 }
 
-extension Array where Element == FormItem {
+extension Array where Element == (any FormItem) {
+
     mutating func insert(payload: InsertPayload) {
         guard var index = payload.selector.index ?? firstIndex(where: { $0.key == payload.selector.name }) else { return }
         index = payload.selector.mode.modify(index: index)

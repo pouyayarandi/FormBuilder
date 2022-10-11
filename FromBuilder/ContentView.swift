@@ -10,6 +10,12 @@ import Combine
 
 class TitleRow: FormItem, ObservableObject {
     
+    var type: FormItemType { .row }
+
+    static func == (lhs: TitleRow, rhs: TitleRow) -> Bool {
+        lhs.id == rhs.id
+    }
+
     var id: UUID = UUID()
     var key: String
     
@@ -24,6 +30,12 @@ class TitleRow: FormItem, ObservableObject {
 
 class SubtitleRow: FormItem, ObservableObject {
     
+    var type: FormItemType { .row }
+
+    static func == (lhs: SubtitleRow, rhs: SubtitleRow) -> Bool {
+        lhs.id == rhs.id
+    }
+    
     var id: UUID = UUID()
     var key: String
     
@@ -36,7 +48,13 @@ class SubtitleRow: FormItem, ObservableObject {
     }
 }
 
-class TextFieldRow: FormInputItem, ObservableObject {
+class TextFieldRow: FormInputRowItem, ObservableObject {
+    
+    var type: FormItemType { .row }
+
+    static func == (lhs: TextFieldRow, rhs: TextFieldRow) -> Bool {
+        lhs.id == rhs.id
+    }
     
     var id: UUID = UUID()
     var key: String
@@ -46,11 +64,16 @@ class TextFieldRow: FormInputItem, ObservableObject {
     @Published var hasDivider: Bool = false
     @Published var value: String = ""
     
-    var error: AnyPublisher<String?, Never> {
+    var error: AnyPublisher<[String], Never> {
         $value.map { [weak self] value in
-            self?.rules
-                .first { !$0.validate(value) }?
-                .errorMessage
+            guard let strongSelf = self else { return [] }
+            return strongSelf
+                .rules
+                .reduce(into: [String?]()) { partialResult, rule in
+                    let message = rule.validate(strongSelf.value).errorMessage
+                    partialResult.append(message)
+                }
+                .compactMap { $0 }
         }.eraseToAnyPublisher()
     }
     
@@ -61,7 +84,13 @@ class TextFieldRow: FormInputItem, ObservableObject {
     }
 }
 
-class SwitchRow: FormInputItem, ObservableObject {
+class SwitchRow: FormInputRowItem, ObservableObject {
+    
+    var type: FormItemType { .row }
+
+    static func == (lhs: SwitchRow, rhs: SwitchRow) -> Bool {
+        lhs.id == rhs.id
+    }
     
     var id: UUID = .init()
     var key: String
@@ -79,7 +108,7 @@ class SwitchRow: FormInputItem, ObservableObject {
 }
 
 struct FormItemView: View {
-    var row: FormItem
+    var row: any FormItem
     
     var body: some View {
         switch row {
@@ -92,9 +121,13 @@ struct FormItemView: View {
     }
 }
 
+extension String: Identifiable {
+    public var id: Int { self.hashValue }
+}
+
 struct TextFieldRowView: View {
     @ObservedObject var row: TextFieldRow
-    @State private var error: String?
+    @State private var errors: [String] = []
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -104,15 +137,19 @@ struct TextFieldRowView: View {
                     RoundedRectangle(cornerRadius: 3)
                         .stroke(.secondary, lineWidth: 0.5))
             
-            if let error = error {
-                Text(error)
-                    .font(.caption)
-                    .foregroundColor(.red)
-                    .animation(.default, value: row.value)
+            if errors.isEmpty == false {
+                ForEach(self.errors) { error in
+                    Text(error)
+                        .font(.caption)
+                        .foregroundColor(.red)
+                        .transition(.move(edge: .leading))
+                }
             }
         }
-        .onReceive(row.error) { error in
-            self.error = error
+        .onReceive(row.error) { errors in
+            withAnimation {
+                self.errors = errors
+            }
         }
     }
 }
@@ -132,6 +169,7 @@ struct SubtitleRowView: View {
         Text(row.text)
             .font(.body)
             .foregroundColor(.secondary)
+            .animation(.easeInOut(duration: 1))
     }
 }
 
@@ -147,12 +185,14 @@ struct SwitchRowView: View {
 struct FormBodyView: View {
     var viewModel: ContentViewModel
     var body: some View {
-        List {
+        ScrollView {
             ForEach(viewModel.list, id: \.id) { item in
                 FormItemView(row: item)
                     .listRowSeparator(item.hasDivider ? .visible : .hidden)
+                    .padding(.horizontal)
             }
         }
+        .padding(.horizontal)
         .listStyle(.plain)
     }
 }
@@ -179,7 +219,7 @@ class ContentViewModel: ObservableObject, Dependable {
         self.dependency = dependency
     }
     
-    @Published var list: [FormItem] = [
+    @Published var list: [any FormItem] = [
         TitleRow(key: "title_1", title: "Name"),
         SubtitleRow(key: "subtitle_1", text: "Enter your name here as first step"),
         TextFieldRow(key: "firstname", rules: [MinLengthRule(minLength: 3)]),
@@ -190,7 +230,7 @@ class ContentViewModel: ObservableObject, Dependable {
     ]
     
     var data: [String: Any] {
-        Dictionary(uniqueKeysWithValues: list.compactMap({ $0 as? (any FormInputItem) }).map({ ($0.key, $0.anyValue) }))
+        Dictionary(uniqueKeysWithValues: list.compactMap({ $0 as? (any FormInputRowItem) }).map({ ($0.key, $0.anyFormInputValue) }))
     }
     
     func buttonTapped() {
