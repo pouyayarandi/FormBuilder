@@ -9,6 +9,7 @@ import Foundation
 
 protocol FormSectionItem: FormItem {
 
-    var rowItems: [any FormRowItem] { get }
+    var sectionTitle: String { get }
 
+    var rowItems: [any FormRowItem] { get }
 }

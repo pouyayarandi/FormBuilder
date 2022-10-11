@@ -11,7 +11,7 @@ enum RuleAction {
 
     case showError(message: String)
     case noAction
-    
+
     var errorMessage: String? {
         switch self {
         case .showError(let message): return message

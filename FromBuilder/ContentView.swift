@@ -40,7 +40,7 @@ class SubtitleRow: FormItem, ObservableObject {
     }
 }
 
-class TextFieldRow: FormInputRowItem, ObservableObject {
+class TextFieldRow: FormInputRowItem {
     
     var type: FormItemType { .row }
     
@@ -215,6 +215,12 @@ class ContentViewModel: ObservableObject, Dependable {
         SubtitleRow(key: "subtitle_3", text: "")
     ]
     
+    var cacnelable: AnyCancellable?
+    
+    var publisherDictionaray: [String: AnyPublisher<Any, Never>] {
+        Dictionary(list.compactMap { $0 as? (any FormInputRowItem) }.map { ($0.key, $0.valueChangePublisher ) }, uniquingKeysWith: { $1 })
+    }
+    
     var data: [String: Any] {
         Dictionary(uniqueKeysWithValues: list.compactMap({ $0 as? (any FormInputRowItem) }).map({ ($0.key, $0.anyFormInputValue) }))
     }
@@ -230,7 +236,13 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
+            
+            let publisher = Publishers.MergeMany(viewModel.publisherDictionaray.map ({ $0.value }))
             FormBodyView(viewModel: viewModel)
+                .onReceive(publisher, perform: { (key) in
+                    viewModel.dependency?.execute(list: &viewModel.list)
+                })
+            
             StickyWidgetView(viewModel: viewModel)
         }
     }
