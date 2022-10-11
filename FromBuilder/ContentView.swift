@@ -12,10 +12,6 @@ class TitleRow: FormItem, ObservableObject {
     
     var type: FormItemType { .row }
 
-    static func == (lhs: TitleRow, rhs: TitleRow) -> Bool {
-        lhs.id == rhs.id
-    }
-
     var id: UUID = UUID()
     var key: String
     
@@ -31,10 +27,6 @@ class TitleRow: FormItem, ObservableObject {
 class SubtitleRow: FormItem, ObservableObject {
     
     var type: FormItemType { .row }
-
-    static func == (lhs: SubtitleRow, rhs: SubtitleRow) -> Bool {
-        lhs.id == rhs.id
-    }
     
     var id: UUID = UUID()
     var key: String
@@ -51,10 +43,6 @@ class SubtitleRow: FormItem, ObservableObject {
 class TextFieldRow: FormInputRowItem, ObservableObject {
     
     var type: FormItemType { .row }
-
-    static func == (lhs: TextFieldRow, rhs: TextFieldRow) -> Bool {
-        lhs.id == rhs.id
-    }
     
     var id: UUID = UUID()
     var key: String
@@ -87,10 +75,6 @@ class TextFieldRow: FormInputRowItem, ObservableObject {
 class SwitchRow: FormInputRowItem, ObservableObject {
     
     var type: FormItemType { .row }
-
-    static func == (lhs: SwitchRow, rhs: SwitchRow) -> Bool {
-        lhs.id == rhs.id
-    }
     
     var id: UUID = .init()
     var key: String
@@ -183,7 +167,9 @@ struct SwitchRowView: View {
 }
 
 struct FormBodyView: View {
-    var viewModel: ContentViewModel
+    
+    @ObservedObject var viewModel: ContentViewModel
+
     var body: some View {
         ScrollView {
             ForEach(viewModel.list, id: \.id) { item in
@@ -198,7 +184,7 @@ struct FormBodyView: View {
 }
 
 struct StickyWidgetView: View {
-    var viewModel: ContentViewModel
+    @ObservedObject var viewModel: ContentViewModel
     var body: some View {
         Button("Submit") {
             viewModel.buttonTapped()
@@ -219,7 +205,7 @@ class ContentViewModel: ObservableObject, Dependable {
         self.dependency = dependency
     }
     
-    @Published var list: [any FormItem] = [
+    @Published var list: [FormItem] = [
         TitleRow(key: "title_1", title: "Name"),
         SubtitleRow(key: "subtitle_1", text: "Enter your name here as first step"),
         TextFieldRow(key: "firstname", rules: [MinLengthRule(minLength: 3)]),
