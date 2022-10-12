@@ -7,13 +7,26 @@
 
 import Foundation
 
-struct Operand<Value> {
+struct Operand<Value: Comparable> {
     enum OperandValue {
         case value(Value)
         case selector(Selector)
         case predicate(any Predicatable)
     }
+
     var operandValue: OperandValue
+
+    func finalValue(_ list: [any FormItem]) -> Value? {
+        if let value {
+            return value
+        } else if let selector {
+            return (selector.select(list) as? any FormInputRowItem)?.anyFormInputValue as? Value
+        } else if let predicate {
+            return predicate.evaluate(list: list) as? Value
+        }
+
+        return nil
+    }
     
     var value: Value? {
         get {

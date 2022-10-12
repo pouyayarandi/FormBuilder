@@ -10,7 +10,7 @@ import Foundation
 protocol Predicatable {
     associatedtype Value: Comparable
     
-    func evaluate() -> Bool
+    func evaluate(list: [any FormItem]) -> Bool
 }
 
 struct Predicate<Value: Comparable>: Predicatable {
@@ -48,7 +48,7 @@ struct Predicate<Value: Comparable>: Predicatable {
     let left: Operand<Value>
     let right: Operand<Value>
     
-    func evaluate() -> Bool {
-        return `operator`.evaluate(lhs: left.value, rhs: right.value)
+    func evaluate(list: [any FormItem]) -> Bool {
+        return `operator`.evaluate(lhs: left.finalValue(list), rhs: right.finalValue(list))
     }
 }

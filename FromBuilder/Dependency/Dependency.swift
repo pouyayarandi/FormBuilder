@@ -22,7 +22,7 @@ class Dependency {
     }
     
     func execute(list: inout [any FormItem]) {
-        if predicate.evaluate() {
+        if predicate.evaluate(list: list) {
             actions.forEach { action in
                 action.execute(list: &list)
             }
@@ -37,7 +37,7 @@ let rightOperand = Operand<String>(operandValue: .value("test12"))
 let predicate = Predicate(operator: .equal, left: leftOperand, right: rightOperand)
 
 let widgetsToInsert = [TitleRow(key: "success", title: "Success")]
-let insertPayload = InsertPayload(selector: .init(mode: .after, value: .key("switch")), widgets: widgetsToInsert)
+let insertPayload = InsertPayload(selector: .init(mode: .before, value: .key("switch")), widgets: widgetsToInsert)
 let action = InsertDependencyAction(payload: insertPayload)
 let testDependency = Dependency(predicate: predicate, actions: [action])
 #endif
