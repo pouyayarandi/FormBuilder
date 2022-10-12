@@ -15,15 +15,13 @@ protocol DependencyPayload {
 class Dependency {
     let predicate: any Predicatable
     let actions: [any DependencyAction]
-    @Published var list: [FormItem]
     
-    init(predicate: any Predicatable, actions: [any DependencyAction], list: [FormItem]) {
+    init(predicate: any Predicatable, actions: [any DependencyAction]) {
         self.predicate = predicate
         self.actions = actions
-        self.list = list
     }
     
-    func execute() {
+    func execute(list: inout [any FormItem]) {
         if predicate.evaluate() {
             actions.forEach { action in
                 action.execute(list: &list)
@@ -41,5 +39,5 @@ let predicate = Predicate(operator: .equal, left: leftOperand, right: rightOpera
 let widgetsToInsert = [TitleRow(key: "success", title: "Success")]
 let insertPayload = InsertPayload(selector: .init(mode: .after, value: .key("switch")), widgets: widgetsToInsert)
 let action = InsertDependencyAction(payload: insertPayload)
-let testDependency = Dependency(predicate: predicate, actions: [action], list: [])
+let testDependency = Dependency(predicate: predicate, actions: [action])
 #endif

@@ -9,7 +9,7 @@ import Foundation
 
 struct InsertPayload: DependencyPayload {
     var selector: Selector
-    let widgets: [FormItem]
+    let widgets: [any FormItem]
 }
 
 struct RemovePayload: DependencyPayload {
@@ -18,7 +18,7 @@ struct RemovePayload: DependencyPayload {
 
 struct ReplacePayload: DependencyPayload {
     var selector: Selector
-    let widget: FormItem
+    let widget: any FormItem
 }
 
 struct AddErrorPayload: DependencyPayload {

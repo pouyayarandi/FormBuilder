@@ -7,17 +7,13 @@
 
 import Foundation
 
-protocol Rule {
-    var errorMessage: String { get }
-    func validate(_ value: Any) -> Bool
-}
-
 struct MinLengthRule: Rule {
-    var minLength: Int
     
-    func validate(_ value: Any) -> Bool {
-        guard let value = value as? String else { return false }
-        return value.count >= minLength
+    var minLength: Int
+
+    func validate(_ value: FormAnyInputValue) -> RuleAction {
+        guard let value: String = value.asValue() else { return .noAction }
+        return value.count >= minLength ? .noAction : .showError(message: "Value should have at least \(minLength) characters")
     }
     
     var errorMessage: String {
@@ -27,10 +23,10 @@ struct MinLengthRule: Rule {
 
 struct MaxLengthRule: Rule {
     var maxLength: Int
-    
-    func validate(_ value: Any) -> Bool {
-        guard let value = value as? String else { return false }
-        return value.count < maxLength
+
+    func validate(_ value: FormAnyInputValue) -> RuleAction {
+        guard let value: String = value.asValue() else { return .noAction }
+        return value.count < maxLength ? .noAction : .showError(message: "Value should have at most \(maxLength) characters")
     }
     
     var errorMessage: String {
@@ -40,22 +36,4 @@ struct MaxLengthRule: Rule {
 
 protocol Dependable {
     var dependency: Dependency? { get set }
-}
-
-protocol FormItem {
-    var id: UUID { get }
-    var key: String { get set }
-    var hasDivider: Bool { get set }
-}
-
-protocol FormInputItem: FormItem {
-    associatedtype Value
-    var rules: [Rule] { get set }
-    var value: Value { get set }
-}
-
-extension FormInputItem {
-    var anyValue: Any {
-        value as Any
-    }
 }
