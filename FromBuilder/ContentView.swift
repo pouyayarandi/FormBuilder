@@ -51,16 +51,11 @@ class TextFieldRow: FormInputRowItem, ObservableObject {
     @Published var placeholder: String?
     @Published var hasDivider: Bool
 
-    var value: KeyValuePairs {
-        get {
-            [
-                self.id.uuidString: .nested(values: [self.key: .string(value: self.textFieldText)])
-            ]
-        } set {
-            
-        }
-    }
     @Published var textFieldText: String
+    
+    var value: FormAnyInputValue {
+        .string(value: textFieldText)
+    }
     
     var error: AnyPublisher<[String], Never> {
         $textFieldText.map { [weak self] value in
@@ -68,8 +63,8 @@ class TextFieldRow: FormInputRowItem, ObservableObject {
             return strongSelf
                 .rules
                 .reduce(into: [String?]()) { partialResult, rule in
-//                    let message = rule.validate(strongSelf.value).errorMessage
-                    partialResult.append("message")
+                    let message = rule.validate(strongSelf.value).errorMessage
+                    partialResult.append(message)
                 }
                 .compactMap { $0 }
         }.eraseToAnyPublisher()
@@ -93,15 +88,12 @@ class SwitchRow: FormInputRowItem, ObservableObject {
     var rules: [Rule] = []
     
     @Published var text: String
-    var value: KeyValuePairs {
-        get {
-            [self.id.uuidString: .nested(values: [self.key: .boolean(value: self.switchInOn)])]
-        } set {
-            
-        }
-    }
     @Published var switchInOn: Bool
     @Published var hasDivider: Bool
+    
+    var value: FormAnyInputValue {
+        .boolean(value: switchInOn)
+    }
     
     init(key: String, text: String, value: Bool) {
         self.key = key
@@ -134,21 +126,24 @@ struct TextFieldRowView: View {
     @State private var errors: [String] = []
     
     var body: some View {
-        VStack(alignment: .leading) {
+        Group {
             TextField(row.placeholder ?? "", text: $row.textFieldText)
-                .preference(key: FormInputRowKeyValuePairsPreferenceKey.self, value: row.value)
+                .preference(
+                    key: FormInputRowKeyValuePairsPreferenceKey.self,
+                    value: row.keyValuePair)
                 .padding(10)
                 .overlay(
                     RoundedRectangle(cornerRadius: 3)
                         .stroke(.secondary, lineWidth: 0.5)
                 )
             
-            if errors.isEmpty == false {
-                ForEach(self.errors) { error in
+            ForEach(self.errors) { error in
+                HStack {
                     Text(error)
                         .font(.caption)
                         .foregroundColor(.red)
-                        .transition(.move(edge: .leading))
+                        .transition(.move(edge: .top))
+                    Spacer()
                 }
             }
         }
@@ -164,7 +159,10 @@ struct TitleRowView: View {
     @ObservedObject var row: TitleRow
     
     var body: some View {
-        Text(row.title).font(.title)
+        HStack {
+            Text(row.title).font(.title)
+            Spacer()
+        }
     }
 }
 
@@ -172,10 +170,13 @@ struct SubtitleRowView: View {
     @ObservedObject var row: SubtitleRow
     
     var body: some View {
-        Text(row.text)
-            .font(.body)
-            .foregroundColor(.secondary)
-            .animation(.easeInOut(duration: 1))
+        HStack {
+            Text(row.text)
+                .font(.body)
+                .foregroundColor(.secondary)
+                .animation(.easeInOut(duration: 1))
+            Spacer()
+        }
     }
 }
 
@@ -184,7 +185,9 @@ struct SwitchRowView: View {
     
     var body: some View {
         Toggle(row.text, isOn: $row.switchInOn)
-            .preference(key: FormInputRowKeyValuePairsPreferenceKey.self, value: row.value)
+            .preference(
+                key: FormInputRowKeyValuePairsPreferenceKey.self,
+                value: row.keyValuePair)
             .padding(.vertical, 8)
     }
 }
@@ -197,12 +200,26 @@ struct FormBodyView: View {
         ScrollView {
             ForEach(viewModel.list, id: \.id) { item in
                 FormItemView(row: item)
-                    .listRowSeparator(item.hasDivider ? .visible : .hidden)
+                    .padding(.vertical, 4)
                     .padding(.horizontal)
+                    .modifier(Divider(hasDivider: item.hasDivider))
             }
         }
-        .padding(.horizontal)
-        .listStyle(.plain)
+    }
+}
+
+struct Divider: ViewModifier {
+    var hasDivider: Bool
+    func body(content: Content) -> some View {
+        VStack(spacing: 0) {
+            content
+            if hasDivider {
+                Rectangle()
+                    .foregroundColor(.secondary)
+                    .frame(height: 0.2)
+                    .padding(.leading)
+            }
+        }
     }
 }
 
@@ -242,7 +259,7 @@ class ContentViewModel: ObservableObject, Dependable {
         Dictionary(
             uniqueKeysWithValues: list
                 .compactMap { $0 as? FormInputRowItem }
-                .flatMap { $0.value }
+                .flatMap { $0.keyValuePair }
         )
     }
     

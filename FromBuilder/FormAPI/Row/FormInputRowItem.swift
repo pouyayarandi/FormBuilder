@@ -13,7 +13,13 @@ import SwiftUI
 /// because we are using PreferenceKey to collect data from children whenever each view is rerendered
 protocol FormInputRowItem: FormRowItem {
 
-    var value: KeyValuePairs { get set }
+    var value: FormAnyInputValue { get }
+}
+
+extension FormInputRowItem {
+    var keyValuePair: KeyValuePairs {
+        [key: value]
+    }
 }
 
 /// all row has an `KeyValuePair` to store their final datas
