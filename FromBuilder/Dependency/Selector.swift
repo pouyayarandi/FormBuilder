@@ -26,6 +26,7 @@ struct Selector {
     enum SelectorValue {
         case index(Int)
         case key(String)
+        case keyChain([String])
     }
 
     var mode: Mode

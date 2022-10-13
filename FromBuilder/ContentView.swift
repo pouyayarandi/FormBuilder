@@ -40,26 +40,36 @@ class SubtitleRow: FormItem, ObservableObject {
     }
 }
 
-class TextFieldRow: FormInputRowItem {
-    
+class TextFieldRow: FormInputRowItem, ObservableObject {
+
     var type: FormItemType { .row }
     
     var id: UUID = UUID()
     var key: String
     var rules: [Rule] = []
     
-    @Published var placeholder: String? = "Enter..."
-    @Published var hasDivider: Bool = false
-    @Published var value: String = ""
+    @Published var placeholder: String?
+    @Published var hasDivider: Bool
+
+    var value: KeyValuePairs {
+        get {
+            [
+                self.id.uuidString: .nested(values: [self.key: .string(value: self.textFieldText)])
+            ]
+        } set {
+            
+        }
+    }
+    @Published var textFieldText: String
     
     var error: AnyPublisher<[String], Never> {
-        $value.map { [weak self] value in
+        $textFieldText.map { [weak self] value in
             guard let strongSelf = self else { return [] }
             return strongSelf
                 .rules
                 .reduce(into: [String?]()) { partialResult, rule in
-                    let message = rule.validate(strongSelf.value).errorMessage
-                    partialResult.append(message)
+//                    let message = rule.validate(strongSelf.value).errorMessage
+                    partialResult.append("message")
                 }
                 .compactMap { $0 }
         }.eraseToAnyPublisher()
@@ -68,7 +78,9 @@ class TextFieldRow: FormInputRowItem {
     init(key: String, rules: [Rule] = [], value: String = "") {
         self.key = key
         self.rules = rules
-        self.value = value
+        self.placeholder = "Enter..."
+        self.hasDivider = false
+        self.textFieldText = ""
     }
 }
 
@@ -81,13 +93,21 @@ class SwitchRow: FormInputRowItem, ObservableObject {
     var rules: [Rule] = []
     
     @Published var text: String
-    @Published var value: Bool
-    @Published var hasDivider: Bool = true
+    var value: KeyValuePairs {
+        get {
+            [self.id.uuidString: .nested(values: [self.key: .boolean(value: self.switchInOn)])]
+        } set {
+            
+        }
+    }
+    @Published var switchInOn: Bool
+    @Published var hasDivider: Bool
     
     init(key: String, text: String, value: Bool) {
         self.key = key
         self.text = text
-        self.value = value
+        self.hasDivider = true
+        self.switchInOn = false
     }
 }
 
@@ -115,11 +135,13 @@ struct TextFieldRowView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            TextField(row.placeholder ?? "", text: $row.value)
+            TextField(row.placeholder ?? "", text: $row.textFieldText)
+                .preference(key: FormInputRowKeyValuePairsPreferenceKey.self, value: row.value)
                 .padding(10)
                 .overlay(
                     RoundedRectangle(cornerRadius: 3)
-                        .stroke(.secondary, lineWidth: 0.5))
+                        .stroke(.secondary, lineWidth: 0.5)
+                )
             
             if errors.isEmpty == false {
                 ForEach(self.errors) { error in
@@ -161,7 +183,8 @@ struct SwitchRowView: View {
     @ObservedObject var row: SwitchRow
     
     var body: some View {
-        Toggle(row.text, isOn: $row.value)
+        Toggle(row.text, isOn: $row.switchInOn)
+            .preference(key: FormInputRowKeyValuePairsPreferenceKey.self, value: row.value)
             .padding(.vertical, 8)
     }
 }
@@ -215,34 +238,34 @@ class ContentViewModel: ObservableObject, Dependable {
         SubtitleRow(key: "subtitle_3", text: "")
     ]
     
-    var cacnelable: AnyCancellable?
-    
-    var publisherDictionaray: [String: AnyPublisher<Any, Never>] {
-        Dictionary(list.compactMap { $0 as? (any FormInputRowItem) }.map { ($0.key, $0.valueChangePublisher ) }, uniquingKeysWith: { $1 })
-    }
-    
-    var data: [String: Any] {
-        Dictionary(uniqueKeysWithValues: list.compactMap({ $0 as? (any FormInputRowItem) }).map({ ($0.key, $0.anyFormInputValue) }))
+    var data: KeyValuePairs {
+        Dictionary(
+            uniqueKeysWithValues: list
+                .compactMap { $0 as? FormInputRowItem }
+                .flatMap { $0.value }
+        )
     }
     
     func buttonTapped() {
-        let json = String(data: try! JSONSerialization.data(withJSONObject: data, options: .fragmentsAllowed), encoding: .utf8) ?? ""
+        
+        let encodedData = try! JSONEncoder().encode(data)
+        let json = String(data: encodedData, encoding: .utf8) ?? ""
         (list[list.count - 1] as! SubtitleRow).text = json
     }
 }
 
 struct ContentView: View {
+    
     @ObservedObject var viewModel: ContentViewModel
     
     var body: some View {
         VStack {
-            
-            let publisher = Publishers.MergeMany(viewModel.publisherDictionaray.map ({ $0.value }))
             FormBodyView(viewModel: viewModel)
-                .onReceive(publisher, perform: { (key) in
-                    viewModel.dependency?.execute(list: &viewModel.list)
-                })
-            
+                .onPreferenceChange(FormInputRowKeyValuePairsPreferenceKey.self) { values in
+                    print("collected values with prefernces \(values)")
+                    print()
+                    print("collected values from viewModels \(viewModel.data)")
+                }
             StickyWidgetView(viewModel: viewModel)
         }
     }
