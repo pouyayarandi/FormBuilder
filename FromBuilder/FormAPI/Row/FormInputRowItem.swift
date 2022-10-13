@@ -7,46 +7,36 @@
 
 import Foundation
 import Combine
+import SwiftUI
 
-protocol FormInputRowItem: FormRowItem, ObservableObject where ObjectWillChangePublisher == ObservableObjectPublisher {
+/// we do not need `ObservableObject where ObjectWillChangePublisher == ObservableObjectPublisher`,
+/// because we are using PreferenceKey to collect data from children whenever each view is rerendered
+protocol FormInputRowItem: FormRowItem {
 
-    associatedtype Value: FormAnyInputValue
-
-    var valueChangePublisher: AnyPublisher<Any, Never> { get }
-    
-    var rules: [Rule] { get set }
-
-    var value: Value { get set }
+    var value: KeyValuePairs { get set }
 }
 
-extension FormInputRowItem {
+/// all row has an `KeyValuePair` to store their final datas
+/// This type is modeled after JSON's representation and supported data types.
+typealias KeyValuePairs = [String: FormAnyInputValue]
 
-    var valueChangePublisher: AnyPublisher<Any, Never> {
-        self.objectWillChange.map { self.value as Any }.eraseToAnyPublisher()
-    }
-    
-    public func `set`(_ value: Any) {
-        self.value = value as! Value
-        objectWillChange.send()
-    }
+enum FormAnyInputValue: Equatable, Codable {
 
-    var anyFormInputValue: any FormAnyInputValue {
-        self.value
-    }
-}
+    case int(value: Int)
+    case double(value: Double)
+    case string(value: String)
+    case boolean(value: Bool)
 
-protocol FormAnyInputValue: Codable, Comparable {}
+    /// also known as `object` in JSON
+    case nested(values: KeyValuePairs)
 
-extension FormAnyInputValue {
-
-    func asValue<T: Codable>() -> T? {
-        self as? T
-    }
-}
-
-extension String: FormAnyInputValue {}
-extension Bool: FormAnyInputValue {
-    public static func < (lhs: Bool, rhs: Bool) -> Bool {
-        return false
+    var value: Any {
+        switch self {
+        case .int(let value): return value
+        case .double(let value): return value
+        case .string(let value): return value
+        case .boolean(let value): return value
+        case .nested(let values): return values
+        }
     }
 }

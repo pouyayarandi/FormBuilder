@@ -24,5 +24,5 @@ protocol Rule {
 
     var errorMessage: String { get }
 
-    func validate(_ value: any FormAnyInputValue) -> RuleAction
+    func validate(_ value: FormAnyInputValue) -> RuleAction
 }
