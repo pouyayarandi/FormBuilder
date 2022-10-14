@@ -7,9 +7,9 @@
 
 import Foundation
 
-struct Operand<Value: Comparable> {
+struct Operand {
     enum OperandValue {
-        case value(Value)
+        case value(FormAnyInputValue)
         case selector(Selector)
         case predicate(any Predicatable)
     }
@@ -17,20 +17,19 @@ struct Operand<Value: Comparable> {
     var operandValue: OperandValue
 
     // this method should be fixed, in order to support KeyValuePairs for aech row
-    func finalValue(_ list: [any FormItem]) -> Value? {
+    func finalValue(_ list: [any FormItem]) -> FormAnyInputValue? {
         if let value {
             return value
         } else if let selector {
-            return nil
-//            return (selector.select(list) as? any FormInputRowItem)?.anyFormInputValue as? Value
+            return (selector.select(list) as? (any FormInputRowItem))?.value
         } else if let predicate {
-            return predicate.evaluate(list: list) as? Value
+            return .boolean(value: predicate.evaluate(list: list))
         }
 
         return nil
     }
     
-    var value: Value? {
+    var value: FormAnyInputValue? {
         get {
             guard case .value(let val) = operandValue else {
                 return nil

@@ -36,5 +36,5 @@ struct MaxLengthRule: Rule {
 }
 
 protocol Dependable {
-    var dependency: Dependency? { get set }
+    var dependencies: [Dependency] { get set }
 }

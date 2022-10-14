@@ -8,13 +8,10 @@
 import Foundation
 
 protocol Predicatable {
-    associatedtype Value: Comparable
-    
     func evaluate(list: [any FormItem]) -> Bool
 }
 
-struct Predicate<Value: Comparable>: Predicatable {
-    typealias Value = Value
+struct Predicate: Predicatable {
     
     enum Operator {
         case and
@@ -28,11 +25,11 @@ struct Predicate<Value: Comparable>: Predicatable {
         case `in`
         case unknown
         
-        func evaluate<Value: Comparable>(lhs: Value?, rhs: Value?) -> Bool {
+        func evaluate(lhs: FormAnyInputValue?, rhs: FormAnyInputValue?) -> Bool {
             guard let lhs = lhs, let rhs = rhs else { return false }
             switch self {
-            case .and: return (lhs as? Bool ?? false) && (rhs as? Bool ?? false)
-            case .or: return (lhs as? Bool ?? false) || (rhs as? Bool ?? false)
+            case .and: return (lhs.boolean ?? false) && (rhs.boolean ?? false)
+            case .or: return (lhs.boolean ?? false) || (rhs.boolean ?? false)
             case .not: return lhs != rhs
             case .equal: return lhs == rhs
             case .greaterThan: return lhs > rhs
@@ -45,8 +42,8 @@ struct Predicate<Value: Comparable>: Predicatable {
     }
         
     let `operator`: Operator
-    let left: Operand<Value>
-    let right: Operand<Value>
+    let left: Operand
+    let right: Operand
     
     func evaluate(list: [any FormItem]) -> Bool {
         return `operator`.evaluate(lhs: left.finalValue(list), rhs: right.finalValue(list))

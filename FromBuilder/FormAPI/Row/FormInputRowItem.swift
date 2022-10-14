@@ -17,6 +17,7 @@ protocol FormInputRowItem: FormRowItem {
 }
 
 extension FormInputRowItem {
+
     var keyValuePair: KeyValuePairs {
         [key: value]
     }
@@ -43,6 +44,51 @@ enum FormAnyInputValue: Equatable, Codable {
         case .string(let value): return value
         case .boolean(let value): return value
         case .nested(let values): return values
+        }
+    }
+}
+
+extension FormAnyInputValue {
+    var boolean: Bool? {
+        switch self {
+        case .boolean(let value):
+            return value
+        default:
+            return nil
+        }
+    }
+}
+
+extension FormAnyInputValue: Comparable {
+    static func < (lhs: FormAnyInputValue, rhs: FormAnyInputValue) -> Bool {
+        switch (lhs, rhs) {
+        case (.int(value: let left), .int(value: let right)): return left < right
+        case (.double(value: let left), .double(value: let right)): return left < right
+        default: return false
+        }
+    }
+    
+    static func <= (lhs: FormAnyInputValue, rhs: FormAnyInputValue) -> Bool {
+        switch (lhs, rhs) {
+        case (.int(value: let left), .int(value: let right)): return left <= right
+        case (.double(value: let left), .double(value: let right)): return left <= right
+        default: return false
+        }
+    }
+    
+    static func > (lhs: FormAnyInputValue, rhs: FormAnyInputValue) -> Bool {
+        switch (lhs, rhs) {
+        case (.int(value: let left), .int(value: let right)): return left > right
+        case (.double(value: let left), .double(value: let right)): return left > right
+        default: return false
+        }
+    }
+    
+    static func >= (lhs: FormAnyInputValue, rhs: FormAnyInputValue) -> Bool {
+        switch (lhs, rhs) {
+        case (.int(value: let left), .int(value: let right)): return left >= right
+        case (.double(value: let left), .double(value: let right)): return left >= right
+        default: return false
         }
     }
 }

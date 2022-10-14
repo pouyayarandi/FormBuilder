@@ -75,7 +75,7 @@ class TextFieldRow: FormInputRowItem, ObservableObject {
         self.rules = rules
         self.placeholder = "Enter..."
         self.hasDivider = false
-        self.textFieldText = ""
+        self.textFieldText = value
     }
 }
 
@@ -99,7 +99,7 @@ class SwitchRow: FormInputRowItem, ObservableObject {
         self.key = key
         self.text = text
         self.hasDivider = true
-        self.switchInOn = false
+        self.switchInOn = value
     }
 }
 
@@ -238,22 +238,41 @@ struct StickyWidgetView: View {
     }
 }
 
+var list: [FormItem] = [
+    TitleRow(key: "title_1", title: "Name"),
+    SubtitleRow(key: "subtitle_1", text: "Enter your name here as first step"),
+    TextFieldRow(key: "firstname", rules: [MinLengthRule(minLength: 3)]),
+    SwitchRow(key: "switch", text: "Toggle it", value: false),
+    SubtitleRow(key: "subtitle_2", text: "Some other text goes here"),
+    TextFieldRow(key: "lastname"),
+    SubtitleRow(key: "subtitle_3", text: "")
+]
+
 class ContentViewModel: ObservableObject, Dependable {
-    var dependency: Dependency?
+    var dependencies: [Dependency]
     
-    init(dependency: Dependency? = nil) {
-        self.dependency = dependency
+    init(list: [FormItem], dependencies: [Dependency] = []) {
+        self.dependencies = dependencies
+        self.set(list)
     }
     
-    @Published var list: [FormItem] = [
-        TitleRow(key: "title_1", title: "Name"),
-        SubtitleRow(key: "subtitle_1", text: "Enter your name here as first step"),
-        TextFieldRow(key: "firstname", rules: [MinLengthRule(minLength: 3)]),
-        SwitchRow(key: "switch", text: "Toggle it", value: false),
-        SubtitleRow(key: "subtitle_2", text: "Some other text goes here"),
-        TextFieldRow(key: "lastname"),
-        SubtitleRow(key: "subtitle_3", text: "")
-    ]
+    private var snapshot: [FormItem] = []
+    @Published var list: [FormItem] = []
+    
+    func `set`(_ list: [FormItem]) {
+        self.list = list
+        self.snapshot = list
+    }
+    
+    func dataDidChanged() {
+        var list = snapshot
+        for dependency in dependencies {
+            list = dependency.execute(list: list)
+        }
+        withAnimation {
+            self.list = list
+        }
+    }
     
     var data: KeyValuePairs {
         Dictionary(
@@ -278,10 +297,8 @@ struct ContentView: View {
     var body: some View {
         VStack {
             FormBodyView(viewModel: viewModel)
-                .onPreferenceChange(FormInputRowKeyValuePairsPreferenceKey.self) { values in
-                    print("collected values with prefernces \(values)")
-                    print()
-                    print("collected values from viewModels \(viewModel.data)")
+                .onPreferenceChange(FormInputRowKeyValuePairsPreferenceKey.self) { _ in
+                    viewModel.dataDidChanged()
                 }
             StickyWidgetView(viewModel: viewModel)
         }
@@ -293,7 +310,7 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            ContentView(viewModel: .init(dependency: testDependency))
+            ContentView(viewModel: .init(list: list, dependencies: dependencies))
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationTitle("Example")
         }
