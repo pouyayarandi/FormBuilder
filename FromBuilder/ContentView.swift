@@ -74,7 +74,7 @@ class TextFieldRow: FormInputRowItem, ObservableObject {
         self.key = key
         self.rules = rules
         self.placeholder = "Enter..."
-        self.hasDivider = false
+        self.hasDivider = true
         self.textFieldText = value
     }
 }
@@ -98,7 +98,7 @@ class SwitchRow: FormInputRowItem, ObservableObject {
     init(key: String, text: String, value: Bool) {
         self.key = key
         self.text = text
-        self.hasDivider = true
+        self.hasDivider = false
         self.switchInOn = value
     }
 }
@@ -112,6 +112,7 @@ struct FormItemView: View {
         case let row as SubtitleRow: SubtitleRowView(row: row)
         case let row as TextFieldRow: TextFieldRowView(row: row)
         case let row as SwitchRow: SwitchRowView(row: row)
+        case let row as SectionRow: SectionWidgetView(viewModel: row)
         default: EmptyView()
         }
     }
@@ -199,10 +200,16 @@ struct FormBodyView: View {
     var body: some View {
         ScrollView {
             ForEach(viewModel.list, id: \.id) { item in
-                FormItemView(row: item)
-                    .padding(.vertical, 4)
-                    .padding(.horizontal)
-                    .modifier(Divider(hasDivider: item.hasDivider))
+                if item.type == .section {
+                    FormItemView(row: item)
+                        .padding(.vertical, 4)
+                        .modifier(Divider(hasDivider: item.hasDivider))
+                } else {
+                    FormItemView(row: item)
+                        .padding(.vertical, 4)
+                        .padding(.horizontal)
+                        .modifier(Divider(hasDivider: item.hasDivider))
+                }
             }
         }
     }
@@ -211,12 +218,12 @@ struct FormBodyView: View {
 struct Divider: ViewModifier {
     var hasDivider: Bool
     func body(content: Content) -> some View {
-        VStack(spacing: 0) {
+        VStack {
             content
             if hasDivider {
                 Rectangle()
                     .foregroundColor(.secondary)
-                    .frame(height: 0.2)
+                    .frame(height: 0.5)
                     .padding(.leading)
             }
         }
@@ -238,14 +245,60 @@ struct StickyWidgetView: View {
     }
 }
 
+final class SectionRow: FormSectionItem, ObservableObject {
+    
+    let id: UUID = UUID()
+    let type: FormItemType = .section
+    var key: String
+    var hasDivider: Bool = false
+    @Published var sectionTitle: String
+    @Published var rowItems: [FormItem]
+    
+    init(key: String, sectionTitle: String, rowItems: [FormItem]) {
+        self.key = key
+        self.sectionTitle = sectionTitle
+        self.rowItems = rowItems
+    }
+}
+
+struct SectionWidgetView: View {
+
+    @ObservedObject var viewModel: SectionRow
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            if viewModel.sectionTitle.isEmpty == false {
+                Text(viewModel.sectionTitle)
+                    .font(.title2)
+                    .bold()
+                    .padding(.leading, 8)
+            }
+            ForEach(viewModel.rowItems, id: \.id) { item in
+                FormItemView(row: item)
+                    .padding(.vertical, 4)
+                    .modifier(
+                        Divider(hasDivider: item.hasDivider)
+                    )
+            }
+        }
+    }
+}
+
+
 var list: [FormItem] = [
     TitleRow(key: "title_1", title: "Name"),
     SubtitleRow(key: "subtitle_1", text: "Enter your name here as first step"),
     TextFieldRow(key: "firstname", rules: [MinLengthRule(minLength: 3)]),
-    SwitchRow(key: "switch", text: "Toggle it", value: false),
-    SubtitleRow(key: "subtitle_2", text: "Some other text goes here"),
-    TextFieldRow(key: "lastname"),
-    SubtitleRow(key: "subtitle_3", text: "")
+    SectionRow(
+        key: "section_1",
+        sectionTitle: "Hiiiiii",
+        rowItems: [
+            SwitchRow(key: "switch", text: "Toggle it", value: false),
+            SubtitleRow(key: "subtitle_2", text: "Some other text goes here"),
+            TextFieldRow(key: "lastname"),
+            SubtitleRow(key: "subtitle_3", text: "")
+        ]
+    )
 ]
 
 class ContentViewModel: ObservableObject, Dependable {

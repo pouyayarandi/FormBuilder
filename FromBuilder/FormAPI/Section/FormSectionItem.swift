@@ -11,5 +11,5 @@ protocol FormSectionItem: FormItem {
 
     var sectionTitle: String { get }
 
-    var rowItems: [any FormRowItem] { get }
+    var rowItems: [FormItem] { get set }
 }
