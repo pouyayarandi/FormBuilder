@@ -54,7 +54,10 @@ class TextFieldRow: FormInputRowItem, ObservableObject {
     @Published var textFieldText: String
     
     var value: FormAnyInputValue {
-        .string(value: textFieldText)
+        .nested(values: [
+            "value": .string(value: textFieldText),
+            "regex": .boolean(value: textFieldText.contains("3"))
+        ])
     }
     
     var error: AnyPublisher<[String], Never> {
@@ -289,16 +292,20 @@ var list: [FormItem] = [
     TitleRow(key: "title_1", title: "Name"),
     SubtitleRow(key: "subtitle_1", text: "Enter your name here as first step"),
     TextFieldRow(key: "firstname", rules: [MinLengthRule(minLength: 3)]),
-    SectionRow(
-        key: "section_1",
-        sectionTitle: "Hiiiiii",
-        rowItems: [
-            SwitchRow(key: "switch", text: "Toggle it", value: false),
-            SubtitleRow(key: "subtitle_2", text: "Some other text goes here"),
-            TextFieldRow(key: "lastname"),
-            SubtitleRow(key: "subtitle_3", text: "")
-        ]
-    )
+    SwitchRow(key: "switch", text: "Toggle it", value: false),
+    SubtitleRow(key: "subtitle_2", text: "Some other text goes here"),
+    TextFieldRow(key: "lastname"),
+    SubtitleRow(key: "subtitle_3", text: "")
+//    SectionRow(
+//        key: "section_1",
+//        sectionTitle: "Hiiiiii",
+//        rowItems: [
+//            SwitchRow(key: "switch", text: "Toggle it", value: false),
+//            SubtitleRow(key: "subtitle_2", text: "Some other text goes here"),
+//            TextFieldRow(key: "lastname"),
+//            SubtitleRow(key: "subtitle_3", text: "")
+//        ]
+//    )
 ]
 
 class ContentViewModel: ObservableObject, Dependable {

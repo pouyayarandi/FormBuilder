@@ -57,20 +57,20 @@ struct ReplaceDependencyAction: DependencyAction {
 extension Array where Element == (any FormItem) {
 
     mutating func insert(payload: InsertPayload) {
-        guard var index = payload.selector.index ?? firstIndex(where: { $0.key == payload.selector.name }) else { return }
-        index = payload.selector.mode.modify(index: index)
+        guard var index = firstIndex(where: { $0.key == payload.selector.name }) else { return }
+        index = payload.mode.modify(index: index)
         insert(contentsOf: payload.widgets, at: index)
     }
     
     mutating func remove(using payload: RemovePayload) {
-        guard var index = payload.selector.index ?? firstIndex(where: { $0.key == payload.selector.name }) else { return }
-        index = payload.selector.mode.modify(index: index)
+        guard var index = firstIndex(where: { $0.key == payload.selector.name }) else { return }
+        index = payload.mode.modify(index: index)
         remove(at: index)
     }
     
     mutating func replace(using payload: ReplacePayload) {
-        guard var index = payload.selector.index ?? firstIndex(where: { $0.key == payload.selector.name }) else { return }
-        index = payload.selector.mode.modify(index: index)
+        guard var index = firstIndex(where: { $0.key == payload.selector.name }) else { return }
+        index = payload.mode.modify(index: index)
         self[index] = payload.widget
     }
 }

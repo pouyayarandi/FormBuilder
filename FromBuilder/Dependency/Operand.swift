@@ -16,16 +16,14 @@ struct Operand {
 
     var operandValue: OperandValue
 
-    // this method should be fixed, in order to support KeyValuePairs for aech row
     func finalValue(_ list: [any FormItem]) -> FormAnyInputValue? {
         if let value {
             return value
         } else if let selector {
-            return (selector.select(list) as? (any FormInputRowItem))?.value
+            return selector.select(list)
         } else if let predicate {
             return .boolean(value: predicate.evaluate(list: list))
         }
-
         return nil
     }
     

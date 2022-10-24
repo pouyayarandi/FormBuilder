@@ -8,30 +8,37 @@
 import Foundation
 
 struct InsertPayload: DependencyPayload {
+    var mode: Mode
     var selector: Selector
     let widgets: [any FormItem]
+    
 }
 
 struct RemovePayload: DependencyPayload {
+    var mode: Mode
     var selector: Selector
 }
 
 struct ReplacePayload: DependencyPayload {
+    var mode: Mode
     var selector: Selector
     let widget: any FormItem
 }
 
 struct AddErrorPayload: DependencyPayload {
+    var mode: Mode
     var selector: Selector
     let message: String
 }
 
 struct AddWarningPayload: DependencyPayload {
+    var mode: Mode
     var selector: Selector
     let message: String
 }
 
 struct SetValuePayload: DependencyPayload {
+    var mode: Mode
     var selector: Selector
     let value: Any
 }
