@@ -41,11 +41,47 @@ struct Predicate: Predicatable {
         }
     }
         
-    let `operator`: Operator
     let left: Operand
+    let `operator`: Operator
     let right: Operand
     
     func evaluate(list: [any FormItem]) -> Bool {
         return `operator`.evaluate(lhs: left.finalValue(list), rhs: right.finalValue(list))
     }
+}
+
+// binary
+func ==(lhs: Operand, rhs: Operand) -> Predicate {
+    Predicate(left: lhs, operator: .equal, right: rhs)
+}
+
+func <(lhs: Operand, rhs: Operand) -> Predicate {
+    Predicate(left: lhs, operator: .lowerThan, right: rhs)
+}
+
+func >(lhs: Operand, rhs: Operand) -> Predicate {
+    Predicate(left: lhs, operator: .greaterThan, right: rhs)
+}
+
+func <=(lhs: Operand, rhs: Operand) -> Predicate {
+    Predicate(left: lhs, operator: .lowerThanEqual, right: rhs)
+}
+
+func >=(lhs: Operand, rhs: Operand) -> Predicate {
+    Predicate(left: lhs, operator: .greaterThanEqual, right: rhs)
+}
+
+// bitwise
+
+func &(lhs: Operand, rhs: Operand) -> Predicate {
+    Predicate(left: lhs, operator: .and, right: rhs)
+}
+
+func |(lhs: Operand, rhs: Operand) -> Predicate {
+    Predicate(left: lhs, operator: .or, right: rhs)
+}
+
+infix operator ! : DefaultPrecedence
+func !(lhs: Operand, rhs: Operand) -> Predicate {
+    Predicate(left: lhs, operator: .not, right: rhs)
 }

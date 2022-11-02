@@ -28,7 +28,11 @@ struct ReplacePayload: DependencyPayload {
 struct AddErrorPayload: DependencyPayload {
     var mode: Mode
     var selector: Selector
-    let message: String
+    let messages: [String]
+
+    var widget: any FormItem {
+        ErrorRow(key: "\(messages.hashValue)", errors: messages)
+    }
 }
 
 struct AddWarningPayload: DependencyPayload {
@@ -40,5 +44,5 @@ struct AddWarningPayload: DependencyPayload {
 struct SetValuePayload: DependencyPayload {
     var mode: Mode
     var selector: Selector
-    let value: Any
+    let value: FormAnyInputValue
 }

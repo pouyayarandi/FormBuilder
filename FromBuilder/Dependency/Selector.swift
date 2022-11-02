@@ -23,7 +23,7 @@ struct Selector {
 //        }
 //    }
     
-    enum SelectorValue {
+    enum SelectionStrategy {
         /*
          selecting by index is not safe and is not guranteed to be the same with each response
          as each dependency can be applied to list.
@@ -39,7 +39,7 @@ struct Selector {
      Mode is also removed as the index was removed, Mode can only be used on `ActionPayload`
      */
 //    var mode: Mode
-    var value: SelectorValue
+    var value: SelectionStrategy
 
 //    var index: Int? {
 //        get {
@@ -76,7 +76,7 @@ struct Selector {
 
     private func extractValue(from list: [any FormItem], with key: String) -> FormAnyInputValue? {
         let formInput = self.flattenInputRows(in: list).first(where: { $0.key == key })
-        return formInput?.value
+        return formInput?.getValues()
     }
 
     private func extractValue(from list: [any FormItem], by keyChain: [String]) -> FormAnyInputValue? {
@@ -86,7 +86,7 @@ struct Selector {
         let rowKey = keyChain.removeFirst() // find the rows first
 
         guard let formInput = self.flattenInputRows(in: list).first(where: { $0.key == rowKey }) else { return nil }
-        switch formInput.value {
+        switch formInput.getValues() {
         case .int, .double, .string, .boolean:
             fatalError("selection with keychain is only acceptable on rows which has several keys")
         case .nested(let values):
@@ -116,6 +116,88 @@ struct Selector {
             }
         } else {
             fatalError("No value Found with \(key) on \(json)")
+        }
+    }
+}
+
+struct SelectionStrategyParser {
+
+    private let strategy: Selector.SelectionStrategy
+
+    init(strategy: Selector.SelectionStrategy) {
+        self.strategy = strategy
+    }
+
+    var rowKey: String {
+        switch strategy {
+        case .key(let string):
+            return string
+        case .keychain(let string):
+            return String(string.split(separator: ".").first!)
+        }
+    }
+
+    var otherKeys: [String] {
+        switch strategy {
+        case .key:
+            return []
+        case .keychain(let string):
+            return string.split(separator: ".").map { String($0) }
+        }
+    }
+    
+}
+
+struct SelectorHelper {
+
+    private let strategy: Selector.SelectionStrategy
+    private let value: FormAnyInputValue
+    
+    init(strategy: Selector.SelectionStrategy, value: FormAnyInputValue) {
+        self.strategy = strategy
+        self.value = value
+    }
+
+    func setIf<Object, Value>(
+        on object: Object,
+        keyPath: ReferenceWritableKeyPath<Object, Value>,
+        _ unpacker: (FormAnyInputValue) -> Value?
+    ) where Object: AnyObject {
+        guard let unpackedValue = unpacker(value) else { return }
+        object[keyPath: keyPath] = unpackedValue
+    }
+
+    func setIf<Object, Value>(
+        on object: Object,
+        keyPath: ReferenceWritableKeyPath<Object, Value>,
+        key: String,
+        _ unpacker: (FormAnyInputValue) -> Value?
+    ) where Object: AnyObject {
+        guard let anyValue = searchRecursivley(on: value, key: key) else { return }
+        if let unpackedValue = unpacker(anyValue) {
+            object[keyPath: keyPath] = unpackedValue
+        }
+    }
+    
+    private func searchRecursivley(on json: FormAnyInputValue, key: String) -> FormAnyInputValue? {
+        switch value {
+        case .int, .double, .string, .boolean:
+            return value
+        case .nested(let values):
+            return searchRecursivley(on: values, key: key)
+        }
+    }
+
+    private func searchRecursivley(on nestedJSON: [String: FormAnyInputValue], key: String) -> FormAnyInputValue? {
+        if let value = nestedJSON[key] {
+            switch value {
+            case .int, .double, .string, .boolean:
+                return value
+            case .nested(let values):
+                return searchRecursivley(on: values, key: key)
+            }
+        } else {
+            return nil
         }
     }
 }

@@ -28,9 +28,20 @@ protocol DependencyPayload {
 }
 
 struct Dependency {
+
     let predicate: any Predicatable
     let actions: [any DependencyAction]
-    
+
+    init(predicate: Predicatable, actions: [any DependencyAction]) {
+        self.predicate = predicate
+        self.actions = actions
+    }
+
+    init(predicate: Predicatable, @ActionBuilder actions: () -> [any DependencyAction]) {
+        self.predicate = predicate
+        self.actions = actions()
+    }
+
     func execute(list: [any FormItem]) -> [any FormItem] {
         var list = list
         if predicate.evaluate(list: list) {
@@ -40,13 +51,20 @@ struct Dependency {
         }
         return list
     }
+    
+    @resultBuilder
+    struct ActionBuilder {
+        static func buildBlock(_ components: (any DependencyAction)...) -> [any DependencyAction] {
+            components
+        }
+    }
 }
 
 
 #if DEBUG
 let leftOperand = Operand(operandValue: .selector(Selector(value: .key("firstname"))))
 let rightOperand = Operand(operandValue: .value(.string(value: "Test12")))
-let predicate = Predicate(operator: .equal, left: leftOperand, right: rightOperand)
+let predicate = Predicate(left: leftOperand, operator: .equal, right: rightOperand)
 
 let widgetsToInsert = [TitleRow(key: "success", title: "Success")]
 let insertPayload = InsertPayload(mode: .at, selector: .init(value: .key("switch")), widgets: widgetsToInsert)
@@ -56,8 +74,7 @@ let testDependency = Dependency(predicate: predicate, actions: [action])
 let dependencies: [Dependency] = [
     .init(
         predicate: Predicate(
-            operator: .equal,
-            left: .init(operandValue: .selector(.init(value: .key("switch")))),
+            left: .init(operandValue: .selector(.init(value: .key("switch")))), operator: .equal,
             right: .init(operandValue: .value(.boolean(value: true)))),
         actions: [
             InsertDependencyAction(
@@ -75,8 +92,7 @@ let dependencies: [Dependency] = [
     
     .init(
         predicate: Predicate(
-            operator: .equal,
-            left: .init(operandValue: .selector(.init(value: .keychain("firstname.regex")))),
+            left: .init(operandValue: .selector(.init(value: .keychain("firstname.regex")))), operator: .equal,
             right: .init(operandValue: .value(.boolean(value: true)))),
         actions: [
             InsertDependencyAction(

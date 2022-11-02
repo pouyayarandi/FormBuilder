@@ -11,7 +11,8 @@ import SwiftUI
 struct FromBuilderApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView(viewModel: .init(list: list, dependencies: dependencies))
+            ContentView(viewModel: .init(list: tList, dependencies: [enableSwitch(),
+                                                                     disableSwitch()]))
         }
     }
 }

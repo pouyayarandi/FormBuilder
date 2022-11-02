@@ -8,104 +8,6 @@
 import SwiftUI
 import Combine
 
-class TitleRow: FormItem, ObservableObject {
-    
-    var type: FormItemType { .row }
-
-    var id: UUID = UUID()
-    var key: String
-    
-    @Published var title: String
-    @Published var hasDivider: Bool = false
-    
-    init(key: String, title: String) {
-        self.key = key
-        self.title = title
-    }
-}
-
-class SubtitleRow: FormItem, ObservableObject {
-    
-    var type: FormItemType { .row }
-    
-    var id: UUID = UUID()
-    var key: String
-    
-    @Published var text: String
-    @Published var hasDivider: Bool = false
-    
-    init(key: String, text: String) {
-        self.key = key
-        self.text = text
-    }
-}
-
-class TextFieldRow: FormInputRowItem, ObservableObject {
-
-    var type: FormItemType { .row }
-    
-    var id: UUID = UUID()
-    var key: String
-    var rules: [Rule] = []
-    
-    @Published var placeholder: String?
-    @Published var hasDivider: Bool
-
-    @Published var textFieldText: String
-    
-    var value: FormAnyInputValue {
-        .nested(values: [
-            "value": .string(value: textFieldText),
-            "regex": .boolean(value: textFieldText.contains("3"))
-        ])
-    }
-    
-    var error: AnyPublisher<[String], Never> {
-        $textFieldText.map { [weak self] value in
-            guard let strongSelf = self else { return [] }
-            return strongSelf
-                .rules
-                .reduce(into: [String?]()) { partialResult, rule in
-                    let message = rule.validate(strongSelf.value).errorMessage
-                    partialResult.append(message)
-                }
-                .compactMap { $0 }
-        }.eraseToAnyPublisher()
-    }
-    
-    init(key: String, rules: [Rule] = [], value: String = "") {
-        self.key = key
-        self.rules = rules
-        self.placeholder = "Enter..."
-        self.hasDivider = true
-        self.textFieldText = value
-    }
-}
-
-class SwitchRow: FormInputRowItem, ObservableObject {
-    
-    var type: FormItemType { .row }
-    
-    var id: UUID = .init()
-    var key: String
-    var rules: [Rule] = []
-    
-    @Published var text: String
-    @Published var switchInOn: Bool
-    @Published var hasDivider: Bool
-    
-    var value: FormAnyInputValue {
-        .boolean(value: switchInOn)
-    }
-    
-    init(key: String, text: String, value: Bool) {
-        self.key = key
-        self.text = text
-        self.hasDivider = false
-        self.switchInOn = value
-    }
-}
-
 struct FormItemView: View {
     var row: any FormItem
     
@@ -116,6 +18,7 @@ struct FormItemView: View {
         case let row as TextFieldRow: TextFieldRowView(row: row)
         case let row as SwitchRow: SwitchRowView(row: row)
         case let row as SectionRow: SectionWidgetView(viewModel: row)
+        case let row as ErrorRow: ErrorRowView(row: row)
         default: EmptyView()
         }
     }
@@ -123,77 +26,6 @@ struct FormItemView: View {
 
 extension String: Identifiable {
     public var id: Int { self.hashValue }
-}
-
-struct TextFieldRowView: View {
-    @ObservedObject var row: TextFieldRow
-    @State private var errors: [String] = []
-    
-    var body: some View {
-        Group {
-            TextField(row.placeholder ?? "", text: $row.textFieldText)
-                .preference(
-                    key: FormInputRowKeyValuePairsPreferenceKey.self,
-                    value: row.keyValuePair)
-                .padding(10)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 3)
-                        .stroke(.secondary, lineWidth: 0.5)
-                )
-            
-            ForEach(self.errors) { error in
-                HStack {
-                    Text(error)
-                        .font(.caption)
-                        .foregroundColor(.red)
-                        .transition(.move(edge: .top))
-                    Spacer()
-                }
-            }
-        }
-        .onReceive(row.error) { errors in
-            withAnimation {
-                self.errors = errors
-            }
-        }
-    }
-}
-
-struct TitleRowView: View {
-    @ObservedObject var row: TitleRow
-    
-    var body: some View {
-        HStack {
-            Text(row.title).font(.title)
-            Spacer()
-        }
-    }
-}
-
-struct SubtitleRowView: View {
-    @ObservedObject var row: SubtitleRow
-    
-    var body: some View {
-        HStack {
-            Text(row.text)
-                .font(.body)
-                .foregroundColor(.secondary)
-                .animation(.easeInOut(duration: 1))
-            Spacer()
-        }
-    }
-}
-
-struct SwitchRowView: View {
-    @ObservedObject var row: SwitchRow
-    
-    var body: some View {
-        Toggle(row.text, isOn: $row.switchInOn)
-            .preference(
-                key: FormInputRowKeyValuePairsPreferenceKey.self,
-                value: row.keyValuePair)
-            .padding(.vertical, 8)
-    }
 }
 
 struct FormBodyView: View {
@@ -288,25 +120,26 @@ struct SectionWidgetView: View {
 }
 
 
-var list: [FormItem] = [
-    TitleRow(key: "title_1", title: "Name"),
-    SubtitleRow(key: "subtitle_1", text: "Enter your name here as first step"),
-    TextFieldRow(key: "firstname", rules: [MinLengthRule(minLength: 3)]),
-    SwitchRow(key: "switch", text: "Toggle it", value: false),
-    SubtitleRow(key: "subtitle_2", text: "Some other text goes here"),
-    TextFieldRow(key: "lastname"),
-    SubtitleRow(key: "subtitle_3", text: "")
-//    SectionRow(
-//        key: "section_1",
-//        sectionTitle: "Hiiiiii",
-//        rowItems: [
-//            SwitchRow(key: "switch", text: "Toggle it", value: false),
-//            SubtitleRow(key: "subtitle_2", text: "Some other text goes here"),
-//            TextFieldRow(key: "lastname"),
-//            SubtitleRow(key: "subtitle_3", text: "")
-//        ]
-//    )
-]
+//var list: [FormItem] = [
+//    TitleRow(key: "rent_title", title: "Rent"),
+//    TextFieldRow(key: "rent", rules: []),
+//    TitleRow(key: "credit_title", title: "Credit"),
+//    TextFieldRow(key: "credit", rules: []),
+//    SwitchRow(key: "transform_switch", text: "Transform it", value: false),
+////    SubtitleRow(key: "subtitle_2", text: "Some other text goes here"),
+////    TextFieldRow(key: "lastname"),
+////    SubtitleRow(key: "subtitle_3", text: "")
+////    SectionRow(
+////        key: "section_1",
+////        sectionTitle: "Hiiiiii",
+////        rowItems: [
+////            SwitchRow(key: "switch", text: "Toggle it", value: false),
+////            SubtitleRow(key: "subtitle_2", text: "Some other text goes here"),
+////            TextFieldRow(key: "lastname"),
+////            SubtitleRow(key: "subtitle_3", text: "")
+////        ]
+////    )
+//]
 
 class ContentViewModel: ObservableObject, Dependable {
     var dependencies: [Dependency]
@@ -370,7 +203,7 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            ContentView(viewModel: .init(list: list, dependencies: dependencies))
+            ContentView(viewModel: .init(list: tList, dependencies: dependencies))
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationTitle("Example")
         }

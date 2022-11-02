@@ -21,6 +21,19 @@
 		92BBCA5D28ECB1B7003B6F83 /* FromBuilderUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92BBCA5C28ECB1B7003B6F83 /* FromBuilderUITests.swift */; };
 		92BBCA5F28ECB1B7003B6F83 /* FromBuilderUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92BBCA5E28ECB1B7003B6F83 /* FromBuilderUITestsLaunchTests.swift */; };
 		92BBCA6C28ECB268003B6F83 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92BBCA6B28ECB268003B6F83 /* Models.swift */; };
+		DE1258D1290E7096003E0E63 /* TitleRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE1258D0290E7096003E0E63 /* TitleRow.swift */; };
+		DE1258D4290E70AC003E0E63 /* SubtitleRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE1258D3290E70AC003E0E63 /* SubtitleRow.swift */; };
+		DE1258D7290E70BA003E0E63 /* TextFieldRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE1258D6290E70BA003E0E63 /* TextFieldRow.swift */; };
+		DE1258DA290E70CC003E0E63 /* SwitchRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE1258D9290E70CC003E0E63 /* SwitchRow.swift */; };
+		DE1258DC290E70E2003E0E63 /* TextFieldRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE1258DB290E70E2003E0E63 /* TextFieldRowView.swift */; };
+		DE1258DE290E7154003E0E63 /* TitleRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE1258DD290E7154003E0E63 /* TitleRowView.swift */; };
+		DE1258E0290E7162003E0E63 /* SubtitleRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE1258DF290E7162003E0E63 /* SubtitleRowView.swift */; };
+		DE1258E2290E716F003E0E63 /* SwitchRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE1258E1290E716F003E0E63 /* SwitchRowView.swift */; };
+		DE1258E4290E7347003E0E63 /* DisablableRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE1258E3290E7347003E0E63 /* DisablableRow.swift */; };
+		DE1258E7290E73DF003E0E63 /* TransformableDependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE1258E6290E73DF003E0E63 /* TransformableDependencies.swift */; };
+		DE1258E9290E73FF003E0E63 /* TrasnformableList.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE1258E8290E73FF003E0E63 /* TrasnformableList.swift */; };
+		DE1258EC290E754D003E0E63 /* ErrorRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE1258EB290E754D003E0E63 /* ErrorRow.swift */; };
+		DE1258EE290E75BE003E0E63 /* ErrorRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE1258ED290E75BE003E0E63 /* ErrorRowView.swift */; };
 		DE16803028F8144800FF5C72 /* FormInputRowKeyValuePairsPreferenceKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE16802F28F8144800FF5C72 /* FormInputRowKeyValuePairsPreferenceKey.swift */; };
 		DE6C6CA328F6A651003318E5 /* FormRuleableItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE6C6CA228F6A651003318E5 /* FormRuleableItem.swift */; };
 		DE75C11A28F475CE003558EA /* FormItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE75C11928F475CE003558EA /* FormItem.swift */; };
@@ -66,6 +79,19 @@
 		92BBCA5C28ECB1B7003B6F83 /* FromBuilderUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FromBuilderUITests.swift; sourceTree = "<group>"; };
 		92BBCA5E28ECB1B7003B6F83 /* FromBuilderUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FromBuilderUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		92BBCA6B28ECB268003B6F83 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		DE1258D0290E7096003E0E63 /* TitleRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleRow.swift; sourceTree = "<group>"; };
+		DE1258D3290E70AC003E0E63 /* SubtitleRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtitleRow.swift; sourceTree = "<group>"; };
+		DE1258D6290E70BA003E0E63 /* TextFieldRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldRow.swift; sourceTree = "<group>"; };
+		DE1258D9290E70CC003E0E63 /* SwitchRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchRow.swift; sourceTree = "<group>"; };
+		DE1258DB290E70E2003E0E63 /* TextFieldRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldRowView.swift; sourceTree = "<group>"; };
+		DE1258DD290E7154003E0E63 /* TitleRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleRowView.swift; sourceTree = "<group>"; };
+		DE1258DF290E7162003E0E63 /* SubtitleRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtitleRowView.swift; sourceTree = "<group>"; };
+		DE1258E1290E716F003E0E63 /* SwitchRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchRowView.swift; sourceTree = "<group>"; };
+		DE1258E3290E7347003E0E63 /* DisablableRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisablableRow.swift; sourceTree = "<group>"; };
+		DE1258E6290E73DF003E0E63 /* TransformableDependencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformableDependencies.swift; sourceTree = "<group>"; };
+		DE1258E8290E73FF003E0E63 /* TrasnformableList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrasnformableList.swift; sourceTree = "<group>"; };
+		DE1258EB290E754D003E0E63 /* ErrorRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorRow.swift; sourceTree = "<group>"; };
+		DE1258ED290E75BE003E0E63 /* ErrorRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorRowView.swift; sourceTree = "<group>"; };
 		DE16802F28F8144800FF5C72 /* FormInputRowKeyValuePairsPreferenceKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormInputRowKeyValuePairsPreferenceKey.swift; sourceTree = "<group>"; };
 		DE6C6CA228F6A651003318E5 /* FormRuleableItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormRuleableItem.swift; sourceTree = "<group>"; };
 		DE75C11928F475CE003558EA /* FormItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormItem.swift; sourceTree = "<group>"; };
@@ -136,6 +162,8 @@
 		92BBCA4028ECB1B5003B6F83 /* FromBuilder */ = {
 			isa = PBXGroup;
 			children = (
+				DE1258E5290E73C8003E0E63 /* Transformable */,
+				DE1258CE290E7082003E0E63 /* FormRowViews */,
 				DE75C11828F475BC003558EA /* FormAPI */,
 				2020CD1B28F2EB0B00D8355E /* Dependency */,
 				92BBCA6B28ECB268003B6F83 /* Models.swift */,
@@ -173,6 +201,72 @@
 			path = FromBuilderUITests;
 			sourceTree = "<group>";
 		};
+		DE1258CE290E7082003E0E63 /* FormRowViews */ = {
+			isa = PBXGroup;
+			children = (
+				DE1258EA290E7540003E0E63 /* ErrorRow */,
+				DE1258D8290E70C8003E0E63 /* SwitchRow */,
+				DE1258D5290E70B5003E0E63 /* TextFieldRow */,
+				DE1258D2290E70A7003E0E63 /* SubtitleRow */,
+				DE1258CF290E7090003E0E63 /* TitleRow */,
+			);
+			path = FormRowViews;
+			sourceTree = "<group>";
+		};
+		DE1258CF290E7090003E0E63 /* TitleRow */ = {
+			isa = PBXGroup;
+			children = (
+				DE1258D0290E7096003E0E63 /* TitleRow.swift */,
+				DE1258DD290E7154003E0E63 /* TitleRowView.swift */,
+			);
+			path = TitleRow;
+			sourceTree = "<group>";
+		};
+		DE1258D2290E70A7003E0E63 /* SubtitleRow */ = {
+			isa = PBXGroup;
+			children = (
+				DE1258D3290E70AC003E0E63 /* SubtitleRow.swift */,
+				DE1258DF290E7162003E0E63 /* SubtitleRowView.swift */,
+			);
+			path = SubtitleRow;
+			sourceTree = "<group>";
+		};
+		DE1258D5290E70B5003E0E63 /* TextFieldRow */ = {
+			isa = PBXGroup;
+			children = (
+				DE1258D6290E70BA003E0E63 /* TextFieldRow.swift */,
+				DE1258DB290E70E2003E0E63 /* TextFieldRowView.swift */,
+			);
+			path = TextFieldRow;
+			sourceTree = "<group>";
+		};
+		DE1258D8290E70C8003E0E63 /* SwitchRow */ = {
+			isa = PBXGroup;
+			children = (
+				DE1258D9290E70CC003E0E63 /* SwitchRow.swift */,
+				DE1258E1290E716F003E0E63 /* SwitchRowView.swift */,
+			);
+			path = SwitchRow;
+			sourceTree = "<group>";
+		};
+		DE1258E5290E73C8003E0E63 /* Transformable */ = {
+			isa = PBXGroup;
+			children = (
+				DE1258E6290E73DF003E0E63 /* TransformableDependencies.swift */,
+				DE1258E8290E73FF003E0E63 /* TrasnformableList.swift */,
+			);
+			path = Transformable;
+			sourceTree = "<group>";
+		};
+		DE1258EA290E7540003E0E63 /* ErrorRow */ = {
+			isa = PBXGroup;
+			children = (
+				DE1258EB290E754D003E0E63 /* ErrorRow.swift */,
+				DE1258ED290E75BE003E0E63 /* ErrorRowView.swift */,
+			);
+			path = ErrorRow;
+			sourceTree = "<group>";
+		};
 		DE75C11828F475BC003558EA /* FormAPI */ = {
 			isa = PBXGroup;
 			children = (
@@ -208,6 +302,7 @@
 				DEF014C028F5421200941CA3 /* FormInputRowItem.swift */,
 				DE6C6CA228F6A651003318E5 /* FormRuleableItem.swift */,
 				DE16802F28F8144800FF5C72 /* FormInputRowKeyValuePairsPreferenceKey.swift */,
+				DE1258E3290E7347003E0E63 /* DisablableRow.swift */,
 			);
 			path = Row;
 			sourceTree = "<group>";
@@ -344,21 +439,34 @@
 			files = (
 				DE6C6CA328F6A651003318E5 /* FormRuleableItem.swift in Sources */,
 				DE75C11A28F475CE003558EA /* FormItem.swift in Sources */,
+				DE1258EE290E75BE003E0E63 /* ErrorRowView.swift in Sources */,
+				DE1258EC290E754D003E0E63 /* ErrorRow.swift in Sources */,
 				92BBCA6C28ECB268003B6F83 /* Models.swift in Sources */,
+				DE1258DA290E70CC003E0E63 /* SwitchRow.swift in Sources */,
 				2020CD2528F2F78800D8355E /* DependencyAction.swift in Sources */,
 				DEF014BD28F541B400941CA3 /* FormRowItem.swift in Sources */,
+				DE1258E7290E73DF003E0E63 /* TransformableDependencies.swift in Sources */,
 				2020CD2128F2EB4E00D8355E /* Operand.swift in Sources */,
+				DE1258E4290E7347003E0E63 /* DisablableRow.swift in Sources */,
+				DE1258DC290E70E2003E0E63 /* TextFieldRowView.swift in Sources */,
+				DE1258E2290E716F003E0E63 /* SwitchRowView.swift in Sources */,
+				DE1258D7290E70BA003E0E63 /* TextFieldRow.swift in Sources */,
 				DEF014BB28F5419100941CA3 /* FormSectionItem.swift in Sources */,
 				DEF014C628F5457400941CA3 /* Rule.swift in Sources */,
 				2020CD2328F2EB6A00D8355E /* Selector.swift in Sources */,
 				92BBCA4428ECB1B5003B6F83 /* ContentView.swift in Sources */,
+				DE1258D4290E70AC003E0E63 /* SubtitleRow.swift in Sources */,
 				2020CD1A28F2CF3800D8355E /* Predicate.swift in Sources */,
 				DE16803028F8144800FF5C72 /* FormInputRowKeyValuePairsPreferenceKey.swift in Sources */,
 				2020CD1D28F2EB2200D8355E /* DependencyPayloads.swift in Sources */,
 				DEF014C128F5421200941CA3 /* FormInputRowItem.swift in Sources */,
 				2020CD1828F2CE9400D8355E /* Dependency.swift in Sources */,
+				DE1258E9290E73FF003E0E63 /* TrasnformableList.swift in Sources */,
 				DEF014BF28F541E300941CA3 /* FormDisplayableRowItem.swift in Sources */,
 				92BBCA4228ECB1B5003B6F83 /* FromBuilderApp.swift in Sources */,
+				DE1258DE290E7154003E0E63 /* TitleRowView.swift in Sources */,
+				DE1258D1290E7096003E0E63 /* TitleRow.swift in Sources */,
+				DE1258E0290E7162003E0E63 /* SubtitleRowView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

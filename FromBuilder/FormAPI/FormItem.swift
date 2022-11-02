@@ -13,7 +13,7 @@ enum FormItemType {
     case section
 }
 
-protocol FormItem {
+protocol FormItem: AnyObject {
 
     var id: UUID { get }
 
